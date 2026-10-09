@@ -3,10 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b1426" />
-    <title>مركز التحكم الشخصي</title>
-    <script type="module" crossorigin src="/assets/index-ZaMySrar.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CloAMm2s.css">
+    <meta name="theme-color" content="#111111" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>مركز إدارة الأساس | AL ASAS</title>
+    <style>html,body{color:#273038;background:#f4f1ea;min-height:100%;margin:0;font-family:Arial,sans-serif}#boot-fallback{box-sizing:border-box;place-items:center;min-height:100vh;padding:24px;display:grid}#boot-card{text-align:center;background:#fffdf8;border:1px solid #ded7cc;border-radius:16px;max-width:460px;padding:28px;box-shadow:0 10px 30px #322d2614}#boot-card h1{margin:0 0 10px;font-size:22px}#boot-card p{color:#777;margin:0;font-size:14px;line-height:1.7}</style>
+    <script>
+      if (location.pathname === '/myproject') {
+        location.replace('/myproject/' + location.search + location.hash);
+      }
+      window.__appMounted = false;
+      window.addEventListener('error', function (event) {
+        var card = document.getElementById('boot-card');
+        if (card && !window.__appMounted) {
+          card.innerHTML = '<h1>تعذر تشغيل الواجهة</h1><p>صار خطأ بتحميل ملفات التطبيق. حدّث الصفحة تحديثاً كاملاً Ctrl + F5. إذا استمر الخطأ، أرسل لقطة من Console.</p>';
+        }
+      });
+      window.addEventListener('unhandledrejection', function () {
+        var card = document.getElementById('boot-card');
+        if (card && !window.__appMounted) {
+          card.innerHTML = '<h1>تعذر تشغيل الواجهة</h1><p>صار خطأ أثناء بدء التطبيق. جرّب Ctrl + F5.</p>';
+        }
+      });
+    </script>
+    <script type="module" crossorigin src="/myproject/assets/index-DKrZb4Yz.js"></script>
+    <link rel="stylesheet" crossorigin href="/myproject/assets/index-OLrNpAxp.css">
   </head>
-  <body><div id="root"></div></body>
+  <body>
+    <div id="root">
+      <div id="boot-fallback"><div id="boot-card"><h1>جاري فتح النظام...</h1><p>إذا استمر التحميل، حدّث الصفحة من زر إعادة التحميل في المتصفح.</p></div></div>
+    </div>
+    <script>
+      setTimeout(function () {
+        var fallback = document.getElementById('boot-fallback');
+        if (!fallback) return;
+        var moduleScript = document.querySelector('script[type="module"][src]');
+        var src = moduleScript && moduleScript.src;
+        if (!src) {
+          var card = document.getElementById('boot-card');
+          if (card) card.innerHTML = '<h1>تعذر تحميل التطبيق</h1><p>لم يتم العثور على ملف تشغيل الواجهة.</p>';
+          return;
+        }
+
+        var retries = Number(sessionStorage.getItem('app-asset-retry') || '0');
+        if (retries < 2) {
+          sessionStorage.setItem('app-asset-retry', String(retries + 1));
+          var retry = document.createElement('script');
+          retry.type = 'module';
+          retry.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'retry=' + Date.now();
+          retry.onerror = function () {
+            var card = document.getElementById('boot-card');
+            if (card) card.innerHTML = '<h1>فشل تحميل التطبيق</h1><p>ملف التشغيل لم يصل من GitHub Pages. اضغط إعادة التحميل بعد ثوانٍ.</p>';
+          };
+          document.body.appendChild(retry);
+        } else {
+          var card = document.getElementById('boot-card');
+          if (card) card.innerHTML = '<h1>فشل بدء التطبيق</h1><p>أغلق الصفحة وافتح رابط /myproject/ من جديد. إذا استمر الخطأ فالمشكلة من ملف التشغيل المنشور.</p>';
+        }
+      }, 3500);
+    </script>
+  </body>
 </html>

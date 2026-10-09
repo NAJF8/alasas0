@@ -1,6 +1,19 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    ".read": false,
+    ".write": false,
+    "alasas_roles": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && root.child('alasas_roles').child(auth.uid).child('role').val() == 'Super Admin'"
+      }
+    },
+    "alasas_data": {
+      ".read": "auth != null && root.child('alasas_roles').child(auth.uid).child('status').val() == 'Active'",
+      ".write": "auth != null && root.child('alasas_roles').child(auth.uid).child('status').val() == 'Active' && (root.child('alasas_roles').child(auth.uid).child('role').val() == 'Super Admin' || root.child('alasas_roles').child(auth.uid).child('permissions').child('dataWrite').val() == true)",
+      "projects": { ".validate": "newData.hasChildren()" },
+      "payments": { ".validate": "newData.hasChildren()" },
+      "expenses": { ".validate": "newData.hasChildren()" }
+    }
   }
 }
