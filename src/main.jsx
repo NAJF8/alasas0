@@ -7,29 +7,14 @@ import { auth, db, googleProvider, firebaseConfigured } from './firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { get, onValue, ref, set } from 'firebase/database';
 
-const seedProjects = [
-  { id:'PRJ-2026-001', name:'متجر إلكتروني للأغذية', client:'محمد أحمد', type:'متجر إلكتروني', status:'قيد البرمجة', price:1600000, received:980000, expenses:210000, progress:68, due:'2026/10/06', color:'mint' },
-  { id:'PRJ-2026-002', name:'نظام إدارة العيادة', client:'عيادة الندى', type:'نظام إدارة', status:'قيد الاختبار', price:2400000, received:1800000, expenses:355000, progress:86, due:'2026/09/30', color:'blue' },
-  { id:'PRJ-2026-003', name:'تطبيق الجوال', client:'شركة خطوة', type:'تطبيق', status:'بانتظار العميل', price:1200000, received:600000, expenses:185000, progress:52, due:'2026/11/12', color:'orange' },
-  { id:'PRJ-2026-004', name:'نظام الولاء', client:'مقهى خاص', type:'نظام ولاء', status:'مكتمل', price:800000, received:800000, expenses:125000, progress:100, due:'2026/08/18', color:'slate' },
-];
-const activities = [
-  ['دفعة جديدة من متجر إلكتروني للأغذية','قبل ساعتين','payment'],['تم إضافة مصروف: استضافة','قبل 4 ساعات','expense'],['تحديث حالة مشروع تطبيق الجوال','قبل 6 ساعات','project'],['تم تجديد اشتراك نطاق example.iq','منذ يوم','domain'],['تم إضافة عميل جديد','منذ يوم','client']
-];
-const seedPayments = [
-  { id:'PAY-001', projectId:'PRJ-2026-001', date:'2026-09-01', amountIqd:300000, amountUsd:0, method:'نقدي', type:'دفعة أولى', note:'' },
-  { id:'PAY-002', projectId:'PRJ-2026-001', date:'2026-09-15', amountIqd:250000, amountUsd:0, method:'تحويل', type:'دفعة وسطية', note:'' },
-  { id:'PAY-003', projectId:'PRJ-2026-002', date:'2026-09-10', amountIqd:500000, amountUsd:0, method:'Zain Cash', type:'دفعة أولى', note:'' },
-];
+const seedProjects = [];
+const activities = [];
+const seedPayments = [];
 const seedExpenses = [];
 const nav = [
   ['dashboard','لوحة التحكم',LayoutDashboard],['projects','المشاريع',FolderKanban],['clients','العملاء',Users],['payments','الدفعات',CreditCard],['expenses','المصاريف',Receipt],['domains','الدومينات',Globe2],['ai','AI والأدوات',Sparkles],['reports','التقارير',BarChart3],['team','المدراء والموظفون',UserCog],['permissions','إدارة الصلاحيات',ShieldCheck],['audit','سجل النشاطات',Activity],['settings','الإعدادات',Settings],['company','إعدادات الشركة',BriefcaseBusiness]
 ];
-const seedUsers = [
-  {id:'USR-001',name:'مالك النظام',email:'owner@alasas.iq',role:'Super Admin',status:'Active',lastLogin:'اليوم، 09:42'},
-  {id:'USR-002',name:'مدير المشاريع',email:'manager@alasas.iq',role:'Project Manager',status:'Active',lastLogin:'أمس، 16:20'},
-  {id:'USR-003',name:'موظف تجريبي',email:'employee@alasas.iq',role:'Employee',status:'Pending',lastLogin:'—'},
-];
+const seedUsers = [];
 const roleLabels = {'Super Admin':'المالك','Admin':'مدير','Project Manager':'مدير مشاريع','Employee':'موظف','Viewer':'مشاهد'};
 const permissionSections = ['المشاريع','العملاء','الدفعات','المصاريف','التقارير','الدومينات','AI والأدوات'];
 const money = n => `${new Intl.NumberFormat('ar-IQ').format(Math.round(Number(n)||0))} د.ع`;
@@ -213,14 +198,14 @@ function AuthGate({children}){
 
 function App({user}){
   const [page,setPage] = useState('dashboard'); const [drawer,setDrawer]=useState(false); const [search,setSearch]=useState('');
-  const [projects,setProjects] = useState(()=>normalizeProjects(readLocalJson('pp-projects',seedProjects)));
-  const [payments,setPayments] = useState(()=>readLocalJson('pp-payments',seedPayments));
-  const [expenses,setExpenses] = useState(()=>readLocalJson('pp-expenses',seedExpenses));
-  const [users,setUsers] = useState(()=>readLocalJson('alasas-users',seedUsers));
-  const [auditLog,setAuditLog] = useState(()=>readLocalJson('alasas-audit',[{id:'AUD-001',actor:'مالك النظام',action:'إنشاء النسخة المؤسسية',entity:'النظام',time:'اليوم، 09:30'}]));
+  const [projects,setProjects] = useState(()=>normalizeProjects(readLocalJson('alasas0-projects-v1',seedProjects)));
+  const [payments,setPayments] = useState(()=>readLocalJson('alasas0-payments-v1',seedPayments));
+  const [expenses,setExpenses] = useState(()=>readLocalJson('alasas0-expenses-v1',seedExpenses));
+  const [users,setUsers] = useState(()=>readLocalJson('alasas0-users-v1',seedUsers));
+  const [auditLog,setAuditLog] = useState(()=>readLocalJson('alasas0-audit-v1',[]));
   const [modal,setModal]=useState(null); const [editingProject,setEditingProject]=useState(null); const [toast,setToast]=useState('');
   const [cloudReady,setCloudReady]=useState(false);
-  const cloudPath=user ? 'alasas_data' : null;
+  const cloudPath=user && firebaseConfigured ? 'alasas0_v1_data' : null;
   const saveCloud = (key,value) => {
     if(!cloudPath) return Promise.resolve();
     return set(ref(db,`${cloudPath}/${key}`),value).catch(err=>{
@@ -245,20 +230,20 @@ function App({user}){
       if(cancelled) return;
       if(snapshot.exists()){
         const data=snapshot.val()||{};
-        if(Array.isArray(data.projects)){ const clean=normalizeProjects(data.projects); setProjects(clean); localStorage.setItem('pp-projects',JSON.stringify(clean)); }
-        if(Array.isArray(data.payments)){ setPayments(data.payments); localStorage.setItem('pp-payments',JSON.stringify(data.payments)); }
-        if(Array.isArray(data.expenses)){ setExpenses(data.expenses); localStorage.setItem('pp-expenses',JSON.stringify(data.expenses)); }
+        if(Array.isArray(data.projects)){ const clean=normalizeProjects(data.projects); setProjects(clean); localStorage.setItem('alasas0-projects-v1',JSON.stringify(clean)); }
+        if(Array.isArray(data.payments)){ setPayments(data.payments); localStorage.setItem('alasas0-payments-v1',JSON.stringify(data.payments)); }
+        if(Array.isArray(data.expenses)){ setExpenses(data.expenses); localStorage.setItem('alasas0-expenses-v1',JSON.stringify(data.expenses)); }
       }else{
-        return set(root,{projects:normalizeProjects(projects),payments,expenses,updatedAt:Date.now()});
+        setProjects([]); setPayments([]); setExpenses([]); return Promise.resolve();
       }
     }).then(()=>{
       if(cancelled) return;
       unsub=onValue(root,snap=>{
-        if(!snap.exists()) return;
+        if(!snap.exists()) { setProjects([]); setPayments([]); setExpenses([]); setCloudReady(true); return; }
         const data=snap.val()||{};
-        if(Array.isArray(data.projects)){ const clean=normalizeProjects(data.projects); setProjects(clean); localStorage.setItem('pp-projects',JSON.stringify(clean)); }
-        if(Array.isArray(data.payments)){ setPayments(data.payments); localStorage.setItem('pp-payments',JSON.stringify(data.payments)); }
-        if(Array.isArray(data.expenses)){ setExpenses(data.expenses); localStorage.setItem('pp-expenses',JSON.stringify(data.expenses)); }
+        if(Array.isArray(data.projects)){ const clean=normalizeProjects(data.projects); setProjects(clean); localStorage.setItem('alasas0-projects-v1',JSON.stringify(clean)); }
+        if(Array.isArray(data.payments)){ setPayments(data.payments); localStorage.setItem('alasas0-payments-v1',JSON.stringify(data.payments)); }
+        if(Array.isArray(data.expenses)){ setExpenses(data.expenses); localStorage.setItem('alasas0-expenses-v1',JSON.stringify(data.expenses)); }
         setCloudReady(true);
       },err=>{
         console.error('Firebase sync failed',err);
@@ -270,7 +255,7 @@ function App({user}){
     });
     return ()=>{cancelled=true;unsub();};
   },[cloudPath]);
-  useEffect(()=>{ localStorage.setItem('pp-projects',JSON.stringify(projects)); },[]);
+
   const totals = useMemo(()=>{
     const agreedIqd=projects.reduce((a,p)=>a+projectPriceIqd(p),0);
     const agreedUsd=projects.reduce((a,p)=>a+projectPriceUsd(p),0);
@@ -282,17 +267,17 @@ function App({user}){
   },[projects,payments,expenses]);
   const filtered = projects.filter(p=>`${p.name} ${p.client} ${p.id}`.includes(search));
   const notify = msg => { setToast(msg); setTimeout(()=>setToast(''),2600); };
-  const persistProjects = next => { const clean=normalizeProjects(next); setProjects(clean); localStorage.setItem('pp-projects',JSON.stringify(clean)); saveCloud('projects',clean); };
-  const persistPayments = next => { setPayments(next); localStorage.setItem('pp-payments',JSON.stringify(next)); saveCloud('payments',next); };
-  const persistExpenses = next => { setExpenses(next); localStorage.setItem('pp-expenses',JSON.stringify(next)); saveCloud('expenses',next); };
-  const addAudit = (action,entity) => { const row={id:makeUid(),actor:user?.displayName||user?.email||'المالك',action,entity,time:new Date().toLocaleString('ar-IQ',{dateStyle:'medium',timeStyle:'short'})}; const next=[row,...auditLog]; setAuditLog(next); localStorage.setItem('alasas-audit',JSON.stringify(next)); };
+  const persistProjects = next => { const clean=normalizeProjects(next); setProjects(clean); localStorage.setItem('alasas0-projects-v1',JSON.stringify(clean)); saveCloud('projects',clean); };
+  const persistPayments = next => { setPayments(next); localStorage.setItem('alasas0-payments-v1',JSON.stringify(next)); saveCloud('payments',next); };
+  const persistExpenses = next => { setExpenses(next); localStorage.setItem('alasas0-expenses-v1',JSON.stringify(next)); saveCloud('expenses',next); };
+  const addAudit = (action,entity) => { const row={id:makeUid(),actor:user?.displayName||user?.email||'المالك',action,entity,time:new Date().toLocaleString('ar-IQ',{dateStyle:'medium',timeStyle:'short'})}; const next=[row,...auditLog]; setAuditLog(next); localStorage.setItem('alasas0-audit-v1',JSON.stringify(next)); };
   const addProject = e => { e.preventDefault(); const form=e.currentTarget; if(form.dataset.submitting==='1') return; form.dataset.submitting='1'; const f=new FormData(form); const p={uid:makeUid(),id:nextProjectCode(projects),name:f.get('name'),client:f.get('client'),type:f.get('type'),status:'فكرة',priceIqd:Number(f.get('priceIqd')||0),priceUsd:Number(f.get('priceUsd')||0),received:0,expenses:0,progress:0,due:'2026/12/30',color:'blue'}; persistProjects([p,...projects]); addAudit('إضافة مشروع',p.name); setModal(null); notify('تمت إضافة المشروع بنجاح'); };
   const saveProjectEdit = e => { e.preventDefault(); const f=new FormData(e.currentTarget); const status=f.get('status'); const enteredProgress=Math.max(0,Math.min(100,Number(f.get('progress')||0))); const progress=['منجز','مكتمل','تم التسليم'].includes(status)?100:enteredProgress; const next=projects.map(p=>p.uid===editingProject.uid?{...p,name:f.get('name'),client:f.get('client'),type:f.get('type'),status,priceIqd:Number(f.get('priceIqd')||0),priceUsd:Number(f.get('priceUsd')||0),progress,due:f.get('due')||p.due}:p); persistProjects(next); setEditingProject(null); setModal(null); notify('تم تحديث المشروع'); };
   const deleteProject = p => { if(!confirm(`حذف المشروع "${p.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) return; const next=projects.filter(x=>x.uid!==p.uid); persistProjects(next); notify('تم حذف المشروع'); };
   return <div className="app-shell">
     <aside className={`sidebar ${drawer?'open':''}`}><div className="brand"><img src={logo} alt="شعار الأساس"/><div><strong>مركز إدارة الأساس</strong><small>AL ASAS</small></div><button className="mobile-close" onClick={()=>setDrawer(false)}><X size={18}/></button></div><div className="profile"><div className="avatar">م</div><div><strong>مرحباً بك</strong><small>{user?.email||'المالك'}</small></div><ChevronLeft size={17}/></div><nav>{nav.map(([id,label,Icon])=><button key={id} className={page===id?'active':''} onClick={()=>{setPage(id);setDrawer(false)}}><Icon size={19}/><span>{label}</span>{id==='payments'&&<b className="nav-dot">3</b>}</button>)}</nav><div className="sidebar-foot"><div className="mini-card"><Zap size={17}/><div><strong>كل شيء تحت السيطرة</strong><span>{cloudReady?'البيانات موحّدة بين الأجهزة':'وضع معاينة محلي'}</span></div></div><button className="sidebar-settings"><Settings size={17}/> إعدادات الحساب</button></div></aside>
     <main className="main"><header className="topbar"><button className="menu-btn" onClick={()=>setDrawer(true)}><Menu size={21}/></button><div className="search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ابحث في المشاريع والعملاء والدفعات ..."/></div><div className="top-actions"><button className="icon-btn notify"><Bell size={19}/><i/></button><div className="date"><CalendarDays size={18}/><span>الأحد، 27 أيلول 2026</span></div></div></header>
-      <div className="content">{page==='dashboard'&&<Dashboard totals={totals} projects={projects} filtered={filtered} onAdd={()=>setModal('project')} onPage={setPage} />}{page==='projects'&&<Projects projects={filtered} payments={payments} expenses={expenses} onAdd={()=>setModal('project')} onCopy={()=>notify('تم نسخ معرف المشروع')} onEdit={p=>{setEditingProject(p);setModal('editProject')}} onDelete={deleteProject} />}{page==='payments'&&<Payments projects={projects} payments={payments} setPayments={persistPayments} notify={notify} />}{page==='expenses'&&<Expenses projects={projects} expenses={expenses} setExpenses={persistExpenses} notify={notify} />}{page==='domains'&&<Domains projects={projects} expenses={expenses} setExpenses={persistExpenses} notify={notify} />}{page==='ai'&&<AIExpenses projects={projects} expenses={expenses} setExpenses={persistExpenses} notify={notify} />}{page==='reports'&&<Reports projects={projects} payments={payments} expenses={expenses} />}{page==='team'&&<TeamPage users={users} setUsers={next=>{setUsers(next);localStorage.setItem('alasas-users',JSON.stringify(next));addAudit('تعديل حسابات المستخدمين','المستخدمون');}} notify={notify} />}{page==='permissions'&&<PermissionsPage users={users} notify={notify} />}{page==='audit'&&<AuditPage auditLog={auditLog} />}{page==='settings'&&<SettingsPage projects={projects} payments={payments} expenses={expenses} cloudPath={cloudPath} notify={notify} />}{page==='company'&&<CompanyPage notify={notify} />}</div>
+      <div className="content">{page==='dashboard'&&<Dashboard totals={totals} projects={projects} filtered={filtered} onAdd={()=>setModal('project')} onPage={setPage} />}{page==='projects'&&<Projects projects={filtered} payments={payments} expenses={expenses} onAdd={()=>setModal('project')} onCopy={()=>notify('تم نسخ معرف المشروع')} onEdit={p=>{setEditingProject(p);setModal('editProject')}} onDelete={deleteProject} />}{page==='payments'&&<Payments projects={projects} payments={payments} setPayments={persistPayments} notify={notify} />}{page==='expenses'&&<Expenses projects={projects} expenses={expenses} setExpenses={persistExpenses} notify={notify} />}{page==='domains'&&<Domains projects={projects} expenses={expenses} setExpenses={persistExpenses} notify={notify} />}{page==='ai'&&<AIExpenses projects={projects} expenses={expenses} setExpenses={persistExpenses} notify={notify} />}{page==='reports'&&<Reports projects={projects} payments={payments} expenses={expenses} />}{page==='team'&&<TeamPage users={users} setUsers={next=>{setUsers(next);localStorage.setItem('alasas0-users-v1',JSON.stringify(next));addAudit('تعديل حسابات المستخدمين','المستخدمون');}} notify={notify} />}{page==='permissions'&&<PermissionsPage users={users} notify={notify} />}{page==='audit'&&<AuditPage auditLog={auditLog} />}{page==='settings'&&<SettingsPage projects={projects} payments={payments} expenses={expenses} cloudPath={cloudPath} notify={notify} />}{page==='company'&&<CompanyPage notify={notify} />}</div>
     </main>{modal==='project'&&<Modal title="إضافة مشروع جديد" close={()=>setModal(null)}><form onSubmit={addProject} className="form"><label>اسم المشروع<input name="name" required placeholder="مثال: متجر إلكتروني"/></label><label>اسم العميل<input name="client" required placeholder="مثال: محمد أحمد"/></label><label>نوع المشروع<select name="type"><option>موقع ويب</option><option>متجر إلكتروني</option><option>نظام إدارة</option><option>تطبيق</option><option>مشروع مخصص</option></select></label><div className="money-fields"><label>السعر بالعراقي<input name="priceIqd" type="number" min="0" step="1" placeholder="0"/></label><label>السعر بالدولار<input name="priceUsd" type="number" min="0" step="0.01" placeholder="0"/></label></div><div className="form-actions"><button type="button" className="btn ghost" onClick={()=>setModal(null)}>إلغاء</button><button className="btn primary"><Plus size={17}/> حفظ المشروع</button></div></form></Modal>}{modal==='editProject'&&editingProject&&<Modal title="تعديل المشروع" close={()=>{setModal(null);setEditingProject(null)}}><form onSubmit={saveProjectEdit} className="form"><label>اسم المشروع<input name="name" required defaultValue={editingProject.name}/></label><label>اسم العميل<input name="client" required defaultValue={editingProject.client}/></label><label>نوع المشروع<select name="type" defaultValue={editingProject.type}><option>موقع ويب</option><option>متجر إلكتروني</option><option>نظام إدارة</option><option>تطبيق</option><option>مشروع مخصص</option><option>نظام POS</option><option>نظام ولاء</option></select></label><label>الحالة<select name="status" defaultValue={editingProject.status}><option>فكرة</option><option>قيد التصميم</option><option>قيد البرمجة</option><option>قيد الاختبار</option><option>بانتظار العميل</option><option>منجز</option><option>مكتمل</option><option>تم التسليم</option><option>صيانة</option><option>متوقف</option><option>ملغي</option></select></label><div className="money-fields"><label>السعر بالعراقي<input name="priceIqd" type="number" min="0" step="1" defaultValue={projectPriceIqd(editingProject)}/></label><label>السعر بالدولار<input name="priceUsd" type="number" min="0" step="0.01" defaultValue={projectPriceUsd(editingProject)}/></label></div><label>نسبة الإنجاز<input name="progress" type="number" min="0" max="100" defaultValue={editingProject.progress}/></label><label>موعد التسليم<input name="due" type="date" defaultValue={(editingProject.due||'').replaceAll('/','-')}/></label><div className="form-actions"><button type="button" className="btn ghost" onClick={()=>{setModal(null);setEditingProject(null)}}>إلغاء</button><button className="btn primary"><Check size={17}/> حفظ التعديلات</button></div></form></Modal>}{toast&&<div className="toast"><Check size={17}/>{toast}</div>}
   </div>
 }
@@ -441,20 +426,22 @@ function TeamPage({users,setUsers,notify}){
 }
 function PermissionsPage({users,notify}){const [selected,setSelected]=useState(users[0]?.id||'');const [state,setState]=useState(()=>Object.fromEntries(permissionSections.map(s=>[s,{View:true,Create:s==='المشاريع',Edit:s==='المشاريع',Delete:false,Export:false,Print:true}])));const current=users.find(u=>u.id===selected);return <><div className="page-head"><div><h1>إدارة الصلاحيات</h1><p>صلاحيات تفصيلية لكل مستخدم. هذه الشاشة معاينة محلية حتى يتم ربط Firebase مستقل وقواعد الخادم.</p></div><button className="btn primary" onClick={()=>notify('تم حفظ مسودة الصلاحيات محلياً')}><ShieldCheck size={16}/> حفظ الصلاحيات</button></div><div className="panel selector-panel"><label>المستخدم<select value={selected} onChange={e=>setSelected(e.target.value)}>{users.map(u=><option key={u.id} value={u.id}>{u.name} — {roleLabels[u.role]||u.role}</option>)}</select></label></div><div className="panel permission-panel"><div className="permission-head"><div><h2>{current?.name}</h2><p>{current?.email} · {roleLabels[current?.role]||current?.role}</p></div><span className="status info">تجاوز صلاحيات الدور ممنوع</span></div><div className="permission-table"><div className="permission-row permission-labels"><span>القسم</span>{['View','Create','Edit','Delete','Export','Print'].map(x=><span key={x}>{x}</span>)}</div>{permissionSections.map(section=><div className="permission-row" key={section}><strong>{section}</strong>{['View','Create','Edit','Delete','Export','Print'].map(action=><label key={action}><input type="checkbox" checked={!!state[section]?.[action]} onChange={e=>setState({...state,[section]:{...state[section],[action]:e.target.checked}})} /></label>)}</div>)}</div></div></>}
 function AuditPage({auditLog}){return <><div className="page-head"><div><h1>سجل النشاطات</h1><p>سجل غير قابل للتعديل من واجهة الموظف للعمليات الإدارية المهمة.</p></div><button className="btn ghost"><FileText size={16}/> تصدير السجل</button></div><div className="panel"><div className="table-wrap"><table><thead><tr><th>المستخدم</th><th>العملية</th><th>الكيان</th><th>التاريخ</th></tr></thead><tbody>{auditLog.map(row=><tr key={row.id}><td>{row.actor}</td><td>{row.action}</td><td>{row.entity}</td><td>{row.time}</td></tr>)}</tbody></table></div></div></>}
-function CompanyPage({notify}){const [form,setForm]=useState(()=>readLocalJson('alasas-company',{name:'شركة الأساس للحلول البرمجية والتطبيقات',phone:'',email:'',address:'العراق'}));const save=()=>{localStorage.setItem('alasas-company',JSON.stringify(form));notify('تم حفظ إعدادات الشركة محلياً')};return <><div className="page-head"><div><h1>إعدادات الشركة</h1><p>بيانات الهوية التي تظهر في التقارير والطباعة.</p></div></div><div className="panel company-form"><div className="company-preview"><img src={logo} alt="شعار الأساس"/><div><strong>AL ASAS</strong><span>من الأساس تبدأ الفكرة</span></div></div><div className="form"><label>اسم الشركة<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>البريد الإلكتروني<input value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label><label>رقم الهاتف<input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label><label>العنوان<input value={form.address} onChange={e=>setForm({...form,address:e.target.value})}/></label><div className="form-actions"><button className="btn primary" onClick={save}><Check size={16}/> حفظ بيانات الشركة</button></div></div></div></>}
+function CompanyPage({notify}){const [form,setForm]=useState(()=>readLocalJson('alasas0-company-v1',{name:'شركة الأساس للحلول البرمجية والتطبيقات',phone:'',email:'',address:'العراق'}));const save=()=>{localStorage.setItem('alasas0-company-v1',JSON.stringify(form));notify('تم حفظ إعدادات الشركة محلياً')};return <><div className="page-head"><div><h1>إعدادات الشركة</h1><p>بيانات الهوية التي تظهر في التقارير والطباعة.</p></div></div><div className="panel company-form"><div className="company-preview"><img src={logo} alt="شعار الأساس"/><div><strong>AL ASAS</strong><span>من الأساس تبدأ الفكرة</span></div></div><div className="form"><label>اسم الشركة<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>البريد الإلكتروني<input value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label><label>رقم الهاتف<input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label><label>العنوان<input value={form.address} onChange={e=>setForm({...form,address:e.target.value})}/></label><div className="form-actions"><button className="btn primary" onClick={save}><Check size={16}/> حفظ بيانات الشركة</button></div></div></div></>}
 
 function SettingsPage({projects,payments,expenses,cloudPath,notify}){
   const [busy,setBusy]=useState(false);
   const forceUpload=async()=>{
+    alert('رفع بيانات الجهاز للسحابة معطل لحماية بيانات My Project.');
+    return;
     if(!cloudPath) return alert('سجّل الدخول أولاً.');
     if(!confirm('سيتم اعتماد بيانات هذا الجهاز ورفعها إلى السحابة واستبدال البيانات المشتركة الحالية. هل تريد المتابعة؟')) return;
     setBusy(true);
     try{
       const clean=normalizeProjects(projects);
       await set(ref(db,cloudPath),{projects:clean,payments,expenses,updatedAt:Date.now(),source:'manual-device-upload'});
-      localStorage.setItem('pp-projects',JSON.stringify(clean));
-      localStorage.setItem('pp-payments',JSON.stringify(payments));
-      localStorage.setItem('pp-expenses',JSON.stringify(expenses));
+      localStorage.setItem('alasas0-projects-v1',JSON.stringify(clean));
+      localStorage.setItem('alasas0-payments-v1',JSON.stringify(payments));
+      localStorage.setItem('alasas0-expenses-v1',JSON.stringify(expenses));
       notify('تم اعتماد بيانات هذا الجهاز ورفعها للسحابة');
     }catch(err){
       console.error(err);
@@ -463,7 +450,7 @@ function SettingsPage({projects,payments,expenses,cloudPath,notify}){
       setBusy(false);
     }
   };
-  return <><div className="page-head"><div><h1>الإعدادات</h1><p>إعدادات النظام والمزامنة</p></div></div><div className="panel" style={{padding:20,maxWidth:720}}><h2 style={{marginTop:0}}>مزامنة الأجهزة</h2><p style={{color:'#64748b',lineHeight:1.8}}>إذا كان اللابتوب يحتوي النسخة الصحيحة من المشاريع والتلفون يعرض بيانات قديمة، افتح هذه الصفحة من اللابتوب واضغط الزر أدناه مرة واحدة. سيتم جعل بيانات هذا الجهاز هي النسخة المعتمدة لكل الأجهزة.</p><div style={{padding:14,borderRadius:10,background:'#f7f3ec',margin:'14px 0'}}><strong>الموجود على هذا الجهاز حالياً:</strong><div style={{marginTop:8,fontSize:12,color:'#66706d'}}>المشاريع: {projects.length} · الدفعات: {payments.length} · المصاريف: {expenses.length}</div></div><button className="btn primary" disabled={busy} onClick={forceUpload}>{busy?'جاري الرفع...':'اعتماد بيانات هذا الجهاز ورفعها للسحابة'}</button></div><div className="panel" style={{padding:20,maxWidth:720,marginTop:16}}><h2 style={{marginTop:0}}>العملات</h2><p style={{color:'#64748b'}}>أسعار المشاريع والدفعات والمصاريف محفوظة بالعراقي والدولار بشكل مستقل، بدون تحويل تلقائي.</p></div></>
+  return <><div className="page-head"><div><h1>الإعدادات</h1><p>إعدادات النظام والمزامنة</p></div></div><div className="panel" style={{padding:20,maxWidth:720}}><h2 style={{marginTop:0}}>مزامنة الأجهزة</h2><p style={{color:'#64748b',lineHeight:1.8}}>إذا كان اللابتوب يحتوي النسخة الصحيحة من المشاريع والتلفون يعرض بيانات قديمة، افتح هذه الصفحة من اللابتوب واضغط الزر أدناه مرة واحدة. سيتم جعل بيانات هذا الجهاز هي النسخة المعتمدة لكل الأجهزة.</p><div style={{padding:14,borderRadius:10,background:'#f7f3ec',margin:'14px 0'}}><strong>الموجود على هذا الجهاز حالياً:</strong><div style={{marginTop:8,fontSize:12,color:'#66706d'}}>المشاريع: {projects.length} · الدفعات: {payments.length} · المصاريف: {expenses.length}</div></div><button className="btn primary" disabled={true} onClick={forceUpload}>{busy?'جاري الرفع...':'اعتماد بيانات هذا الجهاز ورفعها للسحابة'}</button></div><div className="panel" style={{padding:20,maxWidth:720,marginTop:16}}><h2 style={{marginTop:0}}>العملات</h2><p style={{color:'#64748b'}}>أسعار المشاريع والدفعات والمصاريف محفوظة بالعراقي والدولار بشكل مستقل، بدون تحويل تلقائي.</p></div></>
 }
 
 function Placeholder({page,onAdd}){const meta={clients:['العملاء','ملفات العملاء والعلاقة المالية لكل عميل',Users],payments:['الدفعات','تتبع المستحقات والدفعات المكتملة',CreditCard],expenses:['المصاريف','مصروفات المشاريع والمصاريف العامة',Receipt],reports:['التقارير','قراءة أعمق لأداء المشاريع والربحية',BarChart3],settings:['الإعدادات','تخصيص النظام والنسخ الاحتياطي',Settings]}[page]||['الصفحة','قيد التجهيز',Gauge]; const Icon=meta[2];return <div className="placeholder panel"><div className="placeholder-icon"><Icon size={28}/></div><h1>{meta[0]}</h1><p>{meta[1]}</p><button className="btn primary" onClick={onAdd}><Plus size={17}/> إضافة جديد</button></div>}
