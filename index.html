@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>مركز إدارة الأساس | AL ASAS</title>
+    <title>Ù…Ø±ÙƒØ² Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø£Ø³Ø§Ø³ | AL ASAS</title>
     <style>
       html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#f4f1ea;color:#273038}
       #boot-fallback{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}
@@ -16,27 +16,27 @@
       #boot-card p{margin:0;color:#777;line-height:1.7;font-size:14px}
     </style>
     <script>
-      if (location.pathname === '/myproject') {
-        location.replace('/myproject/' + location.search + location.hash);
+      if (location.pathname === '/alasas0') {
+        location.replace('/alasas0/' + location.search + location.hash);
       }
       window.__appMounted = false;
       window.addEventListener('error', function (event) {
         var card = document.getElementById('boot-card');
         if (card && !window.__appMounted) {
-          card.innerHTML = '<h1>تعذر تشغيل الواجهة</h1><p>صار خطأ بتحميل ملفات التطبيق. حدّث الصفحة تحديثاً كاملاً Ctrl + F5. إذا استمر الخطأ، أرسل لقطة من Console.</p>';
+          card.innerHTML = '<h1>ØªØ¹Ø°Ø± ØªØ´ØºÙŠÙ„ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©</h1><p>ØµØ§Ø± Ø®Ø·Ø£ Ø¨ØªØ­Ù…ÙŠÙ„ Ù…Ù„ÙØ§Øª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚. Ø­Ø¯Ù‘Ø« Ø§Ù„ØµÙØ­Ø© ØªØ­Ø¯ÙŠØ«Ø§Ù‹ ÙƒØ§Ù…Ù„Ø§Ù‹ Ctrl + F5. Ø¥Ø°Ø§ Ø§Ø³ØªÙ…Ø± Ø§Ù„Ø®Ø·Ø£ØŒ Ø£Ø±Ø³Ù„ Ù„Ù‚Ø·Ø© Ù…Ù† Console.</p>';
         }
       });
       window.addEventListener('unhandledrejection', function () {
         var card = document.getElementById('boot-card');
         if (card && !window.__appMounted) {
-          card.innerHTML = '<h1>تعذر تشغيل الواجهة</h1><p>صار خطأ أثناء بدء التطبيق. جرّب Ctrl + F5.</p>';
+          card.innerHTML = '<h1>ØªØ¹Ø°Ø± ØªØ´ØºÙŠÙ„ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©</h1><p>ØµØ§Ø± Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø¨Ø¯Ø¡ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚. Ø¬Ø±Ù‘Ø¨ Ctrl + F5.</p>';
         }
       });
     </script>
   </head>
   <body>
     <div id="root">
-      <div id="boot-fallback"><div id="boot-card"><h1>جاري فتح النظام...</h1><p>إذا استمر التحميل، حدّث الصفحة من زر إعادة التحميل في المتصفح.</p></div></div>
+      <div id="boot-fallback"><div id="boot-card"><h1>Ø¬Ø§Ø±ÙŠ ÙØªØ­ Ø§Ù„Ù†Ø¸Ø§Ù…...</h1><p>Ø¥Ø°Ø§ Ø§Ø³ØªÙ…Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„ØŒ Ø­Ø¯Ù‘Ø« Ø§Ù„ØµÙØ­Ø© Ù…Ù† Ø²Ø± Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„ØªØ­Ù…ÙŠÙ„ ÙÙŠ Ø§Ù„Ù…ØªØµÙØ­.</p></div></div>
     </div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
@@ -47,7 +47,7 @@
         var src = moduleScript && moduleScript.src;
         if (!src) {
           var card = document.getElementById('boot-card');
-          if (card) card.innerHTML = '<h1>تعذر تحميل التطبيق</h1><p>لم يتم العثور على ملف تشغيل الواجهة.</p>';
+          if (card) card.innerHTML = '<h1>ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1><p>Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ù…Ù„Ù ØªØ´ØºÙŠÙ„ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©.</p>';
           return;
         }
 
@@ -59,14 +59,15 @@
           retry.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'retry=' + Date.now();
           retry.onerror = function () {
             var card = document.getElementById('boot-card');
-            if (card) card.innerHTML = '<h1>فشل تحميل التطبيق</h1><p>ملف التشغيل لم يصل من GitHub Pages. اضغط إعادة التحميل بعد ثوانٍ.</p>';
+            if (card) card.innerHTML = '<h1>ÙØ´Ù„ ØªØ­Ù…ÙŠÙ„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1><p>Ù…Ù„Ù Ø§Ù„ØªØ´ØºÙŠÙ„ Ù„Ù… ÙŠØµÙ„ Ù…Ù† GitHub Pages. Ø§Ø¶ØºØ· Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„ØªØ­Ù…ÙŠÙ„ Ø¨Ø¹Ø¯ Ø«ÙˆØ§Ù†Ù.</p>';
           };
           document.body.appendChild(retry);
         } else {
           var card = document.getElementById('boot-card');
-          if (card) card.innerHTML = '<h1>فشل بدء التطبيق</h1><p>أغلق الصفحة وافتح رابط /myproject/ من جديد. إذا استمر الخطأ فالمشكلة من ملف التشغيل المنشور.</p>';
+          if (card) card.innerHTML = '<h1>ÙØ´Ù„ Ø¨Ø¯Ø¡ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1><p>Ø£ØºÙ„Ù‚ Ø§Ù„ØµÙØ­Ø© ÙˆØ§ÙØªØ­ Ø±Ø§Ø¨Ø· /alasas0/ Ù…Ù† Ø¬Ø¯ÙŠØ¯. Ø¥Ø°Ø§ Ø§Ø³ØªÙ…Ø± Ø§Ù„Ø®Ø·Ø£ ÙØ§Ù„Ù…Ø´ÙƒÙ„Ø© Ù…Ù† Ù…Ù„Ù Ø§Ù„ØªØ´ØºÙŠÙ„ Ø§Ù„Ù…Ù†Ø´ÙˆØ±.</p>';
         }
       }, 3500);
     </script>
   </body>
 </html>
+

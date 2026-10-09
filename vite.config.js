@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite';
+﻿import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/myproject/',
+  base: '/alasas0/',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -9,3 +9,4 @@ export default defineConfig({
     target: 'es2019',
   },
 });
+
