@@ -16,8 +16,8 @@
       #boot-card p{margin:0;color:#777;line-height:1.7;font-size:14px}
     </style>
     <script>
-      if (location.pathname === '/myproject') {
-        location.replace('/myproject/' + location.search + location.hash);
+      if (location.pathname === '/alasas0') {
+        location.replace('/alasas0/' + location.search + location.hash);
       }
       window.__appMounted = false;
       window.addEventListener('error', function (event) {
@@ -64,7 +64,7 @@
           document.body.appendChild(retry);
         } else {
           var card = document.getElementById('boot-card');
-          if (card) card.innerHTML = '<h1>فشل بدء التطبيق</h1><p>أغلق الصفحة وافتح رابط /myproject/ من جديد. إذا استمر الخطأ فالمشكلة من ملف التشغيل المنشور.</p>';
+          if (card) card.innerHTML = '<h1>فشل بدء التطبيق</h1><p>أغلق الصفحة وافتح رابط /alasas0/ من جديد. إذا استمر الخطأ فالمشكلة من ملف التشغيل المنشور.</p>';
         }
       }, 3500);
     </script>
