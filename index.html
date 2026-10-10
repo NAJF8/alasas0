@@ -1,73 +1,33 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#111111" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>Ù…Ø±ÙƒØ² Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø£Ø³Ø§Ø³ | AL ASAS</title>
-    <style>
-      html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#f4f1ea;color:#273038}
-      #boot-fallback{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}
-      #boot-card{max-width:460px;background:#fffdf8;border:1px solid #ded7cc;border-radius:16px;padding:28px;text-align:center;box-shadow:0 10px 30px rgba(50,45,38,.08)}
-      #boot-card h1{margin:0 0 10px;font-size:22px}
-      #boot-card p{margin:0;color:#777;line-height:1.7;font-size:14px}
-    </style>
-    <script>
-      if (location.pathname === '/alasas0') {
-        location.replace('/alasas0/' + location.search + location.hash);
-      }
-      window.__appMounted = false;
-      window.addEventListener('error', function (event) {
-        var card = document.getElementById('boot-card');
-        if (card && !window.__appMounted) {
-          card.innerHTML = '<h1>ØªØ¹Ø°Ø± ØªØ´ØºÙŠÙ„ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©</h1><p>ØµØ§Ø± Ø®Ø·Ø£ Ø¨ØªØ­Ù…ÙŠÙ„ Ù…Ù„ÙØ§Øª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚. Ø­Ø¯Ù‘Ø« Ø§Ù„ØµÙØ­Ø© ØªØ­Ø¯ÙŠØ«Ø§Ù‹ ÙƒØ§Ù…Ù„Ø§Ù‹ Ctrl + F5. Ø¥Ø°Ø§ Ø§Ø³ØªÙ…Ø± Ø§Ù„Ø®Ø·Ø£ØŒ Ø£Ø±Ø³Ù„ Ù„Ù‚Ø·Ø© Ù…Ù† Console.</p>';
-        }
-      });
-      window.addEventListener('unhandledrejection', function () {
-        var card = document.getElementById('boot-card');
-        if (card && !window.__appMounted) {
-          card.innerHTML = '<h1>ØªØ¹Ø°Ø± ØªØ´ØºÙŠÙ„ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©</h1><p>ØµØ§Ø± Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø¨Ø¯Ø¡ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚. Ø¬Ø±Ù‘Ø¨ Ctrl + F5.</p>';
-        }
-      });
-    </script>
-  </head>
-  <body>
-    <div id="root">
-      <div id="boot-fallback"><div id="boot-card"><h1>Ø¬Ø§Ø±ÙŠ ÙØªØ­ Ø§Ù„Ù†Ø¸Ø§Ù…...</h1><p>Ø¥Ø°Ø§ Ø§Ø³ØªÙ…Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„ØŒ Ø­Ø¯Ù‘Ø« Ø§Ù„ØµÙØ­Ø© Ù…Ù† Ø²Ø± Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„ØªØ­Ù…ÙŠÙ„ ÙÙŠ Ø§Ù„Ù…ØªØµÙØ­.</p></div></div>
-    </div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script>
-      setTimeout(function () {
-        var fallback = document.getElementById('boot-fallback');
-        if (!fallback) return;
-        var moduleScript = document.querySelector('script[type="module"][src]');
-        var src = moduleScript && moduleScript.src;
-        if (!src) {
-          var card = document.getElementById('boot-card');
-          if (card) card.innerHTML = '<h1>ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1><p>Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ù…Ù„Ù ØªØ´ØºÙŠÙ„ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©.</p>';
-          return;
-        }
-
-        var retries = Number(sessionStorage.getItem('app-asset-retry') || '0');
-        if (retries < 2) {
-          sessionStorage.setItem('app-asset-retry', String(retries + 1));
-          var retry = document.createElement('script');
-          retry.type = 'module';
-          retry.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'retry=' + Date.now();
-          retry.onerror = function () {
-            var card = document.getElementById('boot-card');
-            if (card) card.innerHTML = '<h1>ÙØ´Ù„ ØªØ­Ù…ÙŠÙ„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1><p>Ù…Ù„Ù Ø§Ù„ØªØ´ØºÙŠÙ„ Ù„Ù… ÙŠØµÙ„ Ù…Ù† GitHub Pages. Ø§Ø¶ØºØ· Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„ØªØ­Ù…ÙŠÙ„ Ø¨Ø¹Ø¯ Ø«ÙˆØ§Ù†Ù.</p>';
-          };
-          document.body.appendChild(retry);
-        } else {
-          var card = document.getElementById('boot-card');
-          if (card) card.innerHTML = '<h1>ÙØ´Ù„ Ø¨Ø¯Ø¡ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1><p>Ø£ØºÙ„Ù‚ Ø§Ù„ØµÙØ­Ø© ÙˆØ§ÙØªØ­ Ø±Ø§Ø¨Ø· /alasas0/ Ù…Ù† Ø¬Ø¯ÙŠØ¯. Ø¥Ø°Ø§ Ø§Ø³ØªÙ…Ø± Ø§Ù„Ø®Ø·Ø£ ÙØ§Ù„Ù…Ø´ÙƒÙ„Ø© Ù…Ù† Ù…Ù„Ù Ø§Ù„ØªØ´ØºÙŠÙ„ Ø§Ù„Ù…Ù†Ø´ÙˆØ±.</p>';
-        }
-      }, 3500);
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111111" />
+  <title>مركز إدارة الأساس | AL ASAS</title>
+  <style>
+    html,body{margin:0;min-height:100%;font-family:Arial,Tahoma,sans-serif;background:#f4f1ea;color:#273038}
+    #boot-fallback{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}
+    #boot-card{max-width:460px;background:#fffdf8;border:1px solid #ded7cc;border-radius:16px;padding:28px;text-align:center;box-shadow:0 10px 30px rgba(50,45,38,.08)}
+    #boot-card h1{margin:0 0 10px;font-size:22px}
+    #boot-card p{margin:0;color:#777;line-height:1.7;font-size:14px}
+  </style>
+  <script>
+    if(location.pathname === '/alasas0') location.replace('/alasas0/'+location.search+location.hash);
+    window.addEventListener('error',function(e){
+      var c=document.getElementById('boot-card');
+      if(c) c.innerHTML='<h1>تعذر تشغيل الواجهة</h1><p>حدث خطأ في تشغيل التطبيق. افتح أدوات المطور Console لمعرفة التفاصيل.</p>';
+    });
+    window.addEventListener('unhandledrejection',function(e){
+      var c=document.getElementById('boot-card');
+      if(c) c.innerHTML='<h1>تعذر تشغيل الواجهة</h1><p>حدث خطأ أثناء بدء التطبيق. راجع Console.</p>';
+    });
+  </script>
+</head>
+<body>
+  <div id="root">
+    <div id="boot-fallback"><div id="boot-card"><h1>جاري فتح نظام الأساس...</h1><p>إذا بقيت هذه الرسالة، تأكد أن GitHub Pages ينشر ملفات dist الناتجة عن Vite، وليس سورس المشروع.</p></div></div>
+  </div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
-
